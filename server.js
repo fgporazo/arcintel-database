@@ -1,16 +1,61 @@
 const jsonServer = require('json-server');
 const fs = require('fs');
 const path = require('path');
+
 const server = jsonServer.create();
 const middlewares = jsonServer.defaults();
 
 // Path to the temporary storage location
 const tempFilePath = path.join('/tmp', 'db.json');
 
-// If db.json doesn't exist in /tmp, use the default one
+// Ensure the db.json file exists in the /tmp directory
 if (!fs.existsSync(tempFilePath)) {
-  // Optionally, copy the db.json file from your source if needed
-  // fs.copyFileSync('path/to/your/db.json', tempFilePath);
+  // If the file doesn't exist, initialize it with default content (you can customize this)
+  const initialData = {
+    users: [
+      {
+        "id": "1",
+        "firstname": "John",
+        "lastname": "Wick",
+        "password": "1234",
+        "email": "editor@sample.com",
+        "type": "editor",
+        "status": "active"
+      },
+      {
+        "id": "2",
+        "firstname": "Jane",
+        "lastname": "Doe",
+        "password": "1234",
+        "email": "writer@sample.com",
+        "type": "writer",
+        "status": "active"
+      }
+    ],
+    company: [
+      {
+        "id": "1",
+        "logo": "",
+        "name": "Company ABC",
+        "status": "active"
+      }
+    ],
+    articles: [
+      {
+        "id": "1",
+        "image": "",
+        "title": "The Sea",
+        "link": "",
+        "date": "",
+        "content": "",
+        "status": "For Edit",
+        "writer": "1",
+        "editor": "2",
+        "company": "1"
+      }
+    ]
+  };
+  fs.writeFileSync(tempFilePath, JSON.stringify(initialData, null, 2));
 }
 
 // Use /tmp/db.json for your router
@@ -21,17 +66,16 @@ server.use(middlewares);
 
 // Handle requests
 server.use((req, res, next) => {
-  // Example: Write to /tmp/db.json (you can adjust this logic based on your needs)
   if (req.method === 'POST' || req.method === 'PUT') {
-    // Ensure the request data is in JSON format before writing
+    // Collect request data
     let requestData = '';
     req.on('data', chunk => {
       requestData += chunk;
     });
-    
+
     req.on('end', () => {
       const jsonData = JSON.parse(requestData);
-      // Write updated data back to the temporary file
+      // Write updated data back to /tmp/db.json
       fs.writeFileSync(tempFilePath, JSON.stringify(jsonData, null, 2));
       next();
     });
