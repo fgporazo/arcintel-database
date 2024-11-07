@@ -1,0 +1,80 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "firstname": "John",
+      "lastname": "Wick",
+      "password": "1234",
+      "email": "editor@sample.com",
+      "type": "editor",
+      "status": "active"
+    },
+    {
+      "id": "2",
+      "firstname": "Jane",
+      "lastname": "Doe",
+      "password": "1234",
+      "email": "writer@sample.com",
+      "type": "writer",
+      "status": "active"
+    },
+    {
+      "id": "69f5",
+      "firstname": "Fricila",
+      "lastname": "Porazo",
+      "type": "writer",
+      "status": "active"
+    }
+  ],
+  "company": [
+    {
+      "id": "1",
+      "logo": "",
+      "name": "Company ABC",
+      "status": "active"
+    },
+    {
+      "id": "1c57",
+      "logo": "/storage/logos/FUyd4Xk3xZ8zmgbHAkrvAiReqHhrGkK8k6uA6i7t.jpg",
+      "name": "sample",
+      "status": "active"
+    }
+  ],
+  "articles": [
+    {
+      "id": "1",
+      "image": "",
+      "title": "The Sea",
+      "link": "",
+      "date": "",
+      "content": "",
+      "status": "For Edit",
+      "writer": "1",
+      "editor": "2",
+      "company": "1"
+    },
+    {
+      "id": "2",
+      "image": "",
+      "title": "The Ocean",
+      "link": "",
+      "date": "",
+      "content": "",
+      "status": "Published",
+      "writer": "1",
+      "editor": "2",
+      "company": "1"
+    },
+    {
+      "id": "b4fc",
+      "image": "/storage/articles/fLMl0HLxCWgpV5YLof2NAaegyOj655AUY9o5sgao.jpg",
+      "title": "title",
+      "link": "link",
+      "date": "11/07/2024",
+      "content": "<p>sample ocntent</p>",
+      "status": "For Edit",
+      "writer": "1",
+      "company": "1"
+    }
+  ]
+}
