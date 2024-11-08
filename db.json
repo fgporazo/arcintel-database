@@ -19,11 +19,11 @@
       "status": "active"
     },
     {
-      "id": "69f5",
-      "firstname": "Fricila",
-      "lastname": "Porazo",
+      "firstname": "Lali",
+      "lastname": "lay",
       "type": "writer",
-      "status": "active"
+      "status": "active",
+      "id": "69f5"
     }
   ],
   "company": [
@@ -34,10 +34,33 @@
       "status": "active"
     },
     {
-      "id": "1c57",
-      "logo": "/storage/logos/FUyd4Xk3xZ8zmgbHAkrvAiReqHhrGkK8k6uA6i7t.jpg",
-      "name": "sample",
-      "status": "active"
+      "logo": "",
+      "name": "sample1",
+      "status": "active",
+      "id": "1c57"
+    },
+    {
+      "name": "CHickens company",
+      "status": "active",
+      "id": "weE5Oq5"
+    },
+    {
+      "logo": "",
+      "name": "Manok company",
+      "status": "active",
+      "id": "YdFGDkJ"
+    },
+    {
+      "logo": "/storage/logos/INYwMu3Cc5uWXPrZKWTtsRyDlpq4qAT72RkRoFtS.jpg",
+      "name": "real company",
+      "status": "active",
+      "id": "ZzBJ-uD"
+    },
+    {
+      "logo": "",
+      "name": "fire",
+      "status": "active",
+      "id": "JmCH4Io"
     }
   ],
   "articles": [
@@ -66,15 +89,81 @@
       "company": "1"
     },
     {
-      "id": "b4fc",
-      "image": "/storage/articles/fLMl0HLxCWgpV5YLof2NAaegyOj655AUY9o5sgao.jpg",
-      "title": "title",
-      "link": "link",
-      "date": "11/07/2024",
-      "content": "<p>sample ocntent</p>",
+      "image": "",
+      "title": "title new 333",
+      "link": "link new",
+      "date": "11/08/2024",
+      "content": "<p>dsdsadasdf</p>",
       "status": "For Edit",
       "writer": "1",
-      "company": "1"
+      "company": "1",
+      "id": "b4fc"
+    },
+    {
+      "image": "/storage/articles/sRRaTnHKx4uPho02fRydsvHjSPYT6Ipuvj6tcSI4.jpg",
+      "title": "dsds",
+      "link": "dsd",
+      "date": "11/08/2024",
+      "content": "<p>dsd</p>",
+      "status": "For Edit",
+      "writer": "2",
+      "company": "1",
+      "id": "Mkd5XKy"
+    },
+    {
+      "image": "/storage/articles/7lfYrM1CmvTWiOgGuBX5uvTENaMaD3qKglLOlaY6.jpg",
+      "title": "zxz",
+      "link": "xzxz",
+      "date": "11/08/2024",
+      "content": "<p>xzx</p>",
+      "status": "For Edit",
+      "writer": "2",
+      "company": "1",
+      "id": "AyqgjAQ"
+    },
+    {
+      "image": "/storage/articles/rZDoROQSW43Nvk2XgxwK0PtwAPA4cVUvlSBqkrkK.jpg",
+      "title": "new title",
+      "link": "new link",
+      "date": "11/08/2024",
+      "content": "<p>newcc</p>",
+      "status": "For Edit",
+      "writer": "1",
+      "company": "1c57",
+      "id": "DurZDqi"
+    },
+    {
+      "image": "/storage/articles/N1zc1cebLfjCKYmYZYJ0WKm7rmwK9kkUw0z6vob5.jpg",
+      "title": "title new",
+      "link": "link new",
+      "date": "11/08/2024",
+      "content": "<p>new content</p>",
+      "status": "For Edit",
+      "writer": "1",
+      "company": "1c57",
+      "id": "hrH_gQR"
+    },
+    {
+      "image": "",
+      "title": "update1111",
+      "link": "111",
+      "date": "11/08/2024",
+      "content": "<p>dsds</p>",
+      "status": "For Edit",
+      "writer": "2",
+      "company": "1c57",
+      "id": "86Cbw93"
+    },
+    {
+      "image": "",
+      "title": "update",
+      "link": "dsdsd",
+      "date": "11/08/2024",
+      "content": "<p>dsds</p>",
+      "status": "For Edit",
+      "writer": "2",
+      "company": "1c57",
+      "id": "KKLqQAS"
     }
   ]
 }
