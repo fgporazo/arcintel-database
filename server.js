@@ -1,6 +1,7 @@
 const jsonServer = require('json-server');
+const fs = require('fs');
+const path = require('path');
 const cors = require('cors'); // Import CORS
-const { MongoClient, ObjectId } = require('mongodb'); // Import MongoDB driver
 
 const server = jsonServer.create();
 const middlewares = jsonServer.defaults();
@@ -8,114 +9,60 @@ const middlewares = jsonServer.defaults();
 // Enable CORS for all origins
 server.use(cors());
 
-// MongoDB connection URI and database name
-const mongoURI = 'mongodb+srv://user:Gduih7f7ORx2yLGV@cluster0.0jvhv.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0&ssl=true';  // Replace with your MongoDB URI
-const dbName = 'arcintel';  // Your MongoDB database name
-const collectionName = 'users';  // Your collection name (users)
+// Path to the temporary storage location
+const tempFilePath = path.join('/tmp', 'db.json');
 
-let db, usersCollection;
-
-// Connect to MongoDB
-async function connectMongo() {
-  const client = new MongoClient(mongoURI);
-  try {
-    await client.connect();
-    db = client.db(dbName);
-    usersCollection = db.collection(collectionName);
-    console.log('MongoDB connected successfully');
-    
-    // Check if users collection has data
-    const count = await usersCollection.countDocuments();  // Count the documents
-    console.log(`Users collection has ${count} documents.`);
-  } catch (err) {
-    console.error('MongoDB connection error:', err);
-    process.exit(1); // Exit the process if MongoDB connection fails
-  }
+// Ensure the db.json file exists in the /tmp directory
+if (!fs.existsSync(tempFilePath)) {
+  // Initialize with default content
+  const initialData = {
+    users: [
+      { id: "1", firstname: "John", lastname: "Wick", password: "1234", email: "editor@sample.com", type: "editor", status: "active" },
+      { id: "2", firstname: "Jane", lastname: "Doe", password: "1234", email: "writer@sample.com", type: "writer", status: "active" }
+    ],
+    company: [
+      { id: "1", logo: "", name: "Company ABC", status: "active" }
+    ],
+    articles: [
+      { id: "1", image: "", title: "The Sea", link: "", date: "", content: "", status: "For Edit", writer: "1", editor: "2", company: "1" }
+    ]
+  };
+  fs.writeFileSync(tempFilePath, JSON.stringify(initialData, null, 2));
 }
 
-// Connect to MongoDB before handling requests
-connectMongo();
+// Use /tmp/db.json for your router
+const router = jsonServer.router(tempFilePath);
 
-// Use MongoDB for routing
+// Setup middlewares
 server.use(middlewares);
+
+// Improved request handling for POST and PUT
 server.use(jsonServer.bodyParser);
-
-// Handle GET requests for users (retrieve all users)
-server.get('/users', async (req, res) => {
-  try {
-    const users = await usersCollection.find({}).toArray(); // Fetch all users
-    console.log('Fetched users:', users);  // Log the fetched users
-    res.status(200).json(users); // Return all users as response
-  } catch (err) {
-    console.error('Error fetching users:', err);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
-
-// Handle GET requests for a specific user by ID
-server.get('/users/:id', async (req, res) => {
-  try {
-    const userId = req.params.id;
-    const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
-    
-    if (user) {
-      res.status(200).json(user); // Return the user if found
-    } else {
-      res.status(404).json({ error: 'User not found' });
-    }
-  } catch (err) {
-    console.error('Error fetching user:', err);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
-
-// Handle POST and PUT requests for users
-server.use(async (req, res, next) => {
+server.use((req, res, next) => {
   if (req.method === 'POST' || req.method === 'PUT') {
-    const resource = req.url.split('/')[1];
+    // Read the current database
+    const db = JSON.parse(fs.readFileSync(tempFilePath, 'utf-8'));
     
-    if (resource === 'users') {
-      try {
-        if (req.method === 'POST') {
-          // Insert a new user into the MongoDB collection
-          const result = await usersCollection.insertOne(req.body);
-          const newUser = await usersCollection.findOne({ _id: result.insertedId });
-          console.log('Created new user:', newUser);  // Log the newly created user
-          res.status(201).json(newUser); // Send the newly created user back as a response
-        } else if (req.method === 'PUT') {
-          // Update an existing user in MongoDB
-          const { id, ...updateData } = req.body;
-          const result = await usersCollection.updateOne(
-            { _id: new ObjectId(id) },
-            { $set: updateData }
-          );
-
-          if (result.matchedCount > 0) {
-            const updatedUser = await usersCollection.findOne({ _id: new ObjectId(id) });
-            console.log('Updated user:', updatedUser);  // Log the updated user
-            res.status(200).json(updatedUser); // Send the updated user back as a response
-          } else {
-            res.status(404).json({ error: 'User not found' });
-          }
-        }
-      } catch (err) {
-        console.error('Error handling request:', err);
-        res.status(500).json({ error: 'Internal Server Error' });
-      }
-    } else {
-      next(); // If the resource is not "users", continue the request
+    // Add or update the data accordingly
+    if (req.method === 'POST') {
+      const resource = req.url.split('/')[1];
+      db[resource].push(req.body); // Append to the specific resource (e.g., users)
+    } else if (req.method === 'PUT') {
+      // Find the resource and update it; simple example assumes ID is provided
+      const resource = req.url.split('/')[1];
+      const id = req.body.id;
+      db[resource] = db[resource].map(item => item.id === id ? req.body : item);
     }
+    
+    // Write updated data back to /tmp/db.json
+    fs.writeFileSync(tempFilePath, JSON.stringify(db, null, 2));
+    res.status(200).json(req.body);
   } else {
-    next(); // If it's not POST or PUT, continue the request
+    next();
   }
 });
 
-// Use the default JSON server router (for other routes)
-server.use(jsonServer.router({}));
-
-// Start the server
-server.listen(3000, () => {
-  console.log('JSON Server running on http://localhost:3000');
-});
+// Use the router
+server.use(router);
 
 module.exports = server; // Export server for Vercel handling
