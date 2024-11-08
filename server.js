@@ -9,7 +9,7 @@ const middlewares = jsonServer.defaults();
 server.use(cors());
 
 // MongoDB connection URI and database name
-const mongoURI = 'mongodb+srv://user:Gduih7f7ORx2yLGV@cluster0.0jvhv.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';  // Replace with your MongoDB URI
+const mongoURI = 'mongodb+srv://user:Gduih7f7ORx2yLGV@cluster0.0jvhv.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0&ssl=true';  // Replace with your MongoDB URI
 const dbName = 'arcintel';  // Your MongoDB database name
 const collectionName = 'users';  // Your collection name (users)
 
