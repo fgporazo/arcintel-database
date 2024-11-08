@@ -1,6 +1,6 @@
 const jsonServer = require('json-server');
 const cors = require('cors'); // Import CORS
-const { MongoClient } = require('mongodb'); // Import MongoDB driver
+const { MongoClient, ObjectId } = require('mongodb'); // Import MongoDB driver
 
 const server = jsonServer.create();
 const middlewares = jsonServer.defaults();
@@ -18,28 +18,34 @@ let db, usersCollection;
 // Connect to MongoDB
 async function connectMongo() {
   const client = new MongoClient(mongoURI);
-  await client.connect();
-  db = client.db(dbName);
-  usersCollection = db.collection(collectionName);
-  console.log('MongoDB connected successfully');
+  try {
+    await client.connect();
+    db = client.db(dbName);
+    usersCollection = db.collection(collectionName);
+    console.log('MongoDB connected successfully');
+    
+    // Check if users collection has data
+    const count = await usersCollection.countDocuments();  // Count the documents
+    console.log(`Users collection has ${count} documents.`);
+  } catch (err) {
+    console.error('MongoDB connection error:', err);
+    process.exit(1); // Exit the process if MongoDB connection fails
+  }
 }
 
 // Connect to MongoDB before handling requests
-connectMongo().catch(err => {
-  console.error('MongoDB connection error:', err);
-  process.exit(1); // Exit the process if MongoDB connection fails
-});
+connectMongo();
 
 // Use MongoDB for routing
 server.use(middlewares);
 server.use(jsonServer.bodyParser);
 
-// Handle GET requests for users
+// Handle GET requests for users (retrieve all users)
 server.get('/users', async (req, res) => {
   try {
-    // Query all users
-    const users = await usersCollection.find({}).toArray();
-    res.status(200).json(users); // Return all users
+    const users = await usersCollection.find({}).toArray(); // Fetch all users
+    console.log('Fetched users:', users);  // Log the fetched users
+    res.status(200).json(users); // Return all users as response
   } catch (err) {
     console.error('Error fetching users:', err);
     res.status(500).json({ error: 'Internal Server Error' });
@@ -50,7 +56,7 @@ server.get('/users', async (req, res) => {
 server.get('/users/:id', async (req, res) => {
   try {
     const userId = req.params.id;
-    const user = await usersCollection.findOne({ _id: userId });
+    const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
     
     if (user) {
       res.status(200).json(user); // Return the user if found
@@ -71,15 +77,23 @@ server.use(async (req, res, next) => {
     if (resource === 'users') {
       try {
         if (req.method === 'POST') {
-          // Insert a new user
+          // Insert a new user into the MongoDB collection
           const result = await usersCollection.insertOne(req.body);
-          res.status(201).json(result.ops[0]); // Send the newly created user back as a response
+          const newUser = await usersCollection.findOne({ _id: result.insertedId });
+          console.log('Created new user:', newUser);  // Log the newly created user
+          res.status(201).json(newUser); // Send the newly created user back as a response
         } else if (req.method === 'PUT') {
-          // Update an existing user
+          // Update an existing user in MongoDB
           const { id, ...updateData } = req.body;
-          const result = await usersCollection.updateOne({ _id: id }, { $set: updateData });
+          const result = await usersCollection.updateOne(
+            { _id: new ObjectId(id) },
+            { $set: updateData }
+          );
+
           if (result.matchedCount > 0) {
-            res.status(200).json(req.body); // Send the updated user back as a response
+            const updatedUser = await usersCollection.findOne({ _id: new ObjectId(id) });
+            console.log('Updated user:', updatedUser);  // Log the updated user
+            res.status(200).json(updatedUser); // Send the updated user back as a response
           } else {
             res.status(404).json({ error: 'User not found' });
           }
@@ -98,5 +112,10 @@ server.use(async (req, res, next) => {
 
 // Use the default JSON server router (for other routes)
 server.use(jsonServer.router({}));
+
+// Start the server
+server.listen(3000, () => {
+  console.log('JSON Server running on http://localhost:3000');
+});
 
 module.exports = server; // Export server for Vercel handling
